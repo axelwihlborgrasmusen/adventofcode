@@ -44,35 +44,64 @@ int runCalc(int* input, int len) {
 	//input[1] = noun;
 	//input[2] = verb;
 
-	 while ( (position - 2) < len)  {
-	
+	while ( (position - 2) < len)  {
+
 		op = input[position];
 		mode3 = op / 10000;
 		mode2 = (op / 1000) % 10;
 		mode1 = (op / 100) % 10;
 		op = op % 100;		
-		printf("OP: %d \n", op);
 		switch(op) {
 			case 1:
-				firstValue = mode2 > 0 ? input[position + 1] : input[input[position + 1]];
-				secondValue = mode1 > 0 ? input[position + 2] : input[input[position + 2]];
+				firstValue = mode1 > 0 ? input[position + 1] : input[input[position + 1]];
+				secondValue = mode2 > 0 ? input[position + 2] : input[input[position + 2]];
 				input[input[position + 3]] = firstValue + secondValue;
 				position += 4;
 				break;
 			case 2:		
-				firstValue = mode2 > 0 ? input[position + 1] : input[input[position + 1]];
-                                secondValue = mode1 > 0 ? input[position + 2] : input[input[position + 2]];
-                                input[input[position + 3]] = firstValue * secondValue;
+				firstValue = mode1 > 0 ? input[position + 1] : input[input[position + 1]];
+				secondValue = mode2 > 0 ? input[position + 2] : input[input[position + 2]];
+				input[input[position + 3]] = firstValue * secondValue;
 				position += 4;
 				break;
 			case 3:
 				printf("Insert input: \n");
-				scanf("%d", &(input[input[position + 1]]));
+				if(mode1 > 0) {
+					scanf("%d", &(input[position + 1]));
+				} else {		
+					scanf("%d", &(input[input[position + 1]]));
+				}
 				position += 2;
 				break;
 			case 4:
-				printf("%d \n", input[input[position + 1]]);
+				if(mode1 > 0) {
+                                	printf("%d \n", input[position + 1]);
+				} else {
+                                	printf("%d \n", input[input[position + 1]]);
+				}
 				position += 2;
+				break;
+			case 5:
+				firstValue = mode1 > 0 ? input[position + 1] : input[input[position + 1]];
+				secondValue = mode2 > 0 ? input[position + 2] : input[input[position + 2]];
+				position = firstValue != 0 ? secondValue : position + 3;
+				break;
+			case 6:
+				firstValue = mode1 > 0 ? input[position + 1] : input[input[position + 1]];
+				secondValue = mode2 > 0 ? input[position + 2] : input[input[position + 2]];
+				position = firstValue == 0 ? secondValue : position + 3;
+				break;
+			case 7:
+				firstValue = mode1 > 0 ? input[position + 1] : input[input[position + 1]];
+				secondValue = mode2 > 0 ? input[position + 2] : input[input[position + 2]];
+				input[input[position + 3]] = firstValue < secondValue ? 1 : 0;
+				position += 4;
+				break;
+			case 8:
+				firstValue = mode1 > 0 ? input[position + 1] : input[input[position + 1]];
+				secondValue = mode2 > 0 ? input[position + 2] : input[input[position + 2]];
+				input[input[position + 3]] = firstValue == secondValue ? 1 : 0;
+				position += 4;
 				break;
 			case 99:
 				printf("OP 99, program halted. Final value: %d \n", input[0]);
@@ -89,7 +118,7 @@ int runCalc(int* input, int len) {
 void runCalcForAll(int* input, int len, FILE* file) {
 	//for(int i = 0; i < 100; i++) {
 	//	for(int j = 0; j<100; j++) {
-			readInput(file, input);
+	readInput(file, input);
 	//		if (runCalc(input, len, i, j) == 19690720) {
 	//			printf("The noun is: %d, the verb is %d, the answer is: %d", i, j, 100*i+j);
 	//		}
@@ -100,7 +129,7 @@ void runCalcForAll(int* input, int len, FILE* file) {
 
 int main() {
 	FILE* file;
-	file = fopen("inputday52.txt", "r");
+	file = fopen("inputday5.txt", "r");
 	int length = countInts(file);
 	if (length == -1) {
 		return -1;
