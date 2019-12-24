@@ -16,7 +16,7 @@ struct inputValue {
 };
 
 
-int createNewPlanet(struct planet* planets, char* name, char* orbiter) {
+int createNewPlanet(struct planet* planets, char* name, char* orbiter, int length) {
 	
 	if(strcmp(name, "COM") == 0) {
 		struct planet COM = {
@@ -35,7 +35,7 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter) {
 		return 1;	
 	}	
 		
-	for(int i = 0; i < sizeof(planets); i++) {
+	for(int i = 0; i < length; i++) {
 		if(strcmp(planets[i].name, name) == 0) {
 			//parent planet found!
 			struct planet parent = planets[i];
@@ -104,7 +104,7 @@ void fixPlanets(struct inputValue* in, strict planet* planets, int length) {
 	redo:
 	for(int i = done; i < sizeof(in); i++) {
 		struct inputValue current = in[i];
-		if(createNewPlanet(current.name, current.orbit) == 1) {
+		if(createNewPlanet(planets, current.name, current.orbit, length) == 1) {
 			done++;
 			current.handled
 		}	
