@@ -16,23 +16,48 @@ struct inputValue {
 };
 
 
-int createNewPlanet(struct planet* planets, char* name, char* orbiter, int length) {
-	
+int createNewPlanet(struct planet* planets, char* name, char* orbiter, int length, int position) {
+	int pos = position;
 	if(strcmp(name, "COM") == 0) {
+	int exists = 0;
+	struct planet COM;
+	for(int i = 0; i<=position; i++) {
+		if(strcmp(planets[i].name, "COM")) {
+			exists = 1;
+			COM = planets[i];
+		}
+	}
+	if(!exists) {
 		struct planet COM = {
 			.name = *name,
 			.parent = NULL,
 			.orbiters = malloc(sizeof(struct planet)),
 			.orbiterSize = 1
 		};
+		planets[pos] = COM;
+		pos++;
+	}
 		struct planet child = {
-			.name = *orbiter,
-			.parent = &COM,
-			.orbiters = NULL,
-			.orbiterSize = 0
-		};
-		COM.orbiters[0] = child;
-		return 1;	
+                                .name = *orbiter,
+                                .parent = &COM,
+                                .orbiters = NULL,
+                                .orbiterSize = 0
+                        };
+                        if(COM.orbiterSize == 0) {
+                                COM.orbiters = malloc(sizeof(planets));
+                                COM.orbiters[0] = child;
+                                COM.orbiterSize++;
+                        } else {
+                                struct planet* temp = malloc(COM.orbiterSize + 1);
+                                for(int t = 0; t< COM.orbiterSize; t++) {
+                                        temp[t] = COM.orbiters[t];
+                                }
+                                temp[COM.orbiterSize] = child;
+                                free(COM.orbiters);
+                                COM.orbiters = temp;
+                        }
+		planets[pos] = child;
+	return exists ? 1 : 2;	
 	}	
 		
 	for(int i = 0; i < length; i++) {
@@ -40,7 +65,7 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 			//parent planet found!
 			struct planet parent = planets[i];
 			struct planet child = {
-				.name = *name,
+				.name = *orbiter,
 				.parent = &parent,
 				.orbiters = NULL,
 				.orbiterSize = 0
@@ -58,6 +83,7 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 				free(parent.orbiters);
 				parent.orbiters = temp;	
 			}
+			planets[pos] = child;
 			return 1;			
 		}
 	}	
@@ -97,15 +123,21 @@ void readInput(FILE* file, struct inputValue* in) {
 int cmp (const void * a, const void * b) {
 	struct inputValue first = *(struct inputValue*) a;
    	struct inputValue second = *(struct inputValue*) b;
-	return (second.handled - first.handled);
+	return (first.handled - second.handled);
 }
 
 void fixPlanets(struct inputValue* in, struct planet* planets, int length) {
 	int done = 0;
+	int position = 0;
+	int success = 0;
 	redo:
-	for(int i = done; i < length; i++) {
+	for(int i = 0; i < length - done; i++) {
 		struct inputValue current = in[i];
-		if(createNewPlanet(planets, current.name, current.orbit, length) == 1) {
+		if(current.handled == 1) {
+			continue;
+		}
+		if((success = createNewPlanet(planets, current.name, current.orbit, length, position)) == 1) {
+			position += success;
 			done++;
 			current.handled = 1;
 		}	
