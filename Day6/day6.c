@@ -23,7 +23,7 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 	struct planet COM = {
                         .name = *name,
                         .parent = NULL,
-                        .orbiters = malloc(sizeof(struct planet)),
+                        .orbiters = NULL,
                         .orbiterSize = 1
                 };
 	for(int i = 0; i<=position; i++) {
@@ -33,6 +33,7 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 		}
 	}
 	if(!exists) {
+		COM.orbiters = malloc(sizeof(struct planet));
 		planets[pos] = COM;
 		pos++;
 	}
@@ -52,7 +53,7 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
                                         temp[t] = COM.orbiters[t];
                                 }
                                 temp[COM.orbiterSize] = child;
-                                //free(COM.orbiters);
+                                free(COM.orbiters);
                                 COM.orbiters = temp;
 				COM.orbiterSize++;
                         }
@@ -80,7 +81,7 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 					temp[t] = parent.orbiters[t];
 				}
 				temp[parent.orbiterSize] = child;
-				//free(parent.orbiters);
+				free(parent.orbiters);
 				parent.orbiters = temp;
 				parent.orbiterSize++;	
 			}
