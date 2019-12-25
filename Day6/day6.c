@@ -20,7 +20,12 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 	int pos = position;
 	if(strcmp(name, "COM") == 0) {
 	int exists = 0;
-	struct planet COM;
+	struct planet COM = {
+                        .name = *name,
+                        .parent = NULL,
+                        .orbiters = malloc(sizeof(struct planet)),
+                        .orbiterSize = 1
+                };
 	for(int i = 0; i<=position; i++) {
 		if(strcmp(planets[i].name, "COM") == 0) {
 			exists = 1;
@@ -28,12 +33,6 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 		}
 	}
 	if(!exists) {
-		struct planet COM = {
-			.name = *name,
-			.parent = NULL,
-			.orbiters = malloc(sizeof(struct planet)),
-			.orbiterSize = 1
-		};
 		planets[pos] = COM;
 		pos++;
 	}
@@ -53,8 +52,9 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
                                         temp[t] = COM.orbiters[t];
                                 }
                                 temp[COM.orbiterSize] = child;
-                                free(COM.orbiters);
+                                //free(COM.orbiters);
                                 COM.orbiters = temp;
+				COM.orbiterSize++;
                         }
 		planets[pos] = child;
 	return exists ? 1 : 2;	
@@ -80,8 +80,9 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 					temp[t] = parent.orbiters[t];
 				}
 				temp[parent.orbiterSize] = child;
-				free(parent.orbiters);
-				parent.orbiters = temp;	
+				//free(parent.orbiters);
+				parent.orbiters = temp;
+				parent.orbiterSize++;	
 			}
 			planets[pos] = child;
 			return 1;			
@@ -136,7 +137,7 @@ void fixPlanets(struct inputValue* in, struct planet* planets, int length) {
 		if(current.handled == 1) {
 			continue;
 		}
-		if((success = createNewPlanet(planets, current.name, current.orbit, length, position)) == 1) {
+		if((success = createNewPlanet(planets, current.name, current.orbit, length, position)) > 0) {
 			position += success;
 			done++;
 			current.handled = 1;
