@@ -130,7 +130,7 @@ void fixPlanets(struct inputValue* in, struct planet* planets, int length) {
 	int done = 0;
 	int position = 0;
 	int success = 0;
-	redo:
+	while( done != length - 1) {
 	for(int i = 0; i < length - done; i++) {
 		struct inputValue current = in[i];
 		if(current.handled == 1) {
@@ -145,9 +145,8 @@ void fixPlanets(struct inputValue* in, struct planet* planets, int length) {
 
 	qsort(in, length, sizeof(struct inputValue), cmp);
 	printf("Fixing planets, round with %d done out of %d \n", done, length);
-	if(done < (length-1)) {
-	goto redo;
 	}
+	printf("Done with planet fixing");
 }
 
 int main() {
