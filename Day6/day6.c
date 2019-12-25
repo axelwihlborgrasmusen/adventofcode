@@ -22,7 +22,7 @@ int createNewPlanet(struct planet* planets, char* name, char* orbiter, int lengt
 	int exists = 0;
 	struct planet COM;
 	for(int i = 0; i<=position; i++) {
-		if(strcmp(planets[i].name, "COM")) {
+		if(strcmp(planets[i].name, "COM") == 0) {
 			exists = 1;
 			COM = planets[i];
 		}
