@@ -8,6 +8,11 @@ struct inputValue {
 	int hand;
 };
 
+struct parent {
+	char name[4];
+	int len;
+};
+
 
 int calculateRows(FILE* file) {
 	char name[4];
@@ -52,38 +57,57 @@ int done(struct inputValue* in, int len) {
 	return 1;
 }
 
+void populateparents(struct inputValue* in, struct parent* par, int len) {
+	int position = 0;
+	struct parent p = {
+		.name = "STR",
+		.len = 0
+		};
+	
+		while (strcmp(par[position].name, "COM") != 0) {
+			for(int i = 0; i < len; i++) {
+				if(strcmp(in[i].orbit, par[position].name) == 0) {
+					position++;
+					strncpy(p.name, in[i].name, 4);
+					p.len++;
+					par[position] = p;
+				}
+		}	
+
+}
+}
+
+int intersect(struct parent* me, struct parent* san, int len) {
+	
+	for(int i = 1; i < len; i++) {
+		for(int j = 1; j < len; j++) {
+			if(strcmp(me[i].name, san[j].name) == 0) {
+				return me[i].len + san[j].len - 2;
+			}
+		}
+	}
+
+	return -1;
+}
+
 void calculateOrbits(struct inputValue* in, int len) {
 	int dir = 0;
 	int indir = 0;
 
-	char (*curr)[4] = malloc(len/3 * sizeof(char) * 4);
-	char (*next)[4] = malloc(len/3 * 4);
-
-	int nCounter = 0;
-	int clen = 1;
-	int level = 0;
-	strncpy(curr[0], "COM", 4);
-
-	while(!done(in, len) && level < 2350) {
-		for(int i = 0; i<clen; i++) {
-			for(int j = 0; j<len; j++) {
-				if(strcmp(in[j].name, curr[i]) == 0) {
-					in[j].hand = 1;
-					strncpy(next[nCounter], in[j].orbit, 4);
-					nCounter++;
-				}			
-			
-			}		
-		}
-		clen = nCounter;
-		nCounter = 0;
-		dir += clen;
-		level++;
-		indir += (clen * (level));
-		memcpy(curr, next, len/3);
-		memset(next, 0, len/3);
-	}
-	printf("Direct: %d, Indirect: %d, Sum: %d", dir, indir, dir+indir);
+	struct parent* me = malloc(len/3 * sizeof(struct parent) * 4);
+	struct parent*  san = malloc(len/3 * 4 * sizeof(struct parent));
+	
+	struct parent t = {
+		.name = "YOU",
+		.len = 0
+		};
+	me[0] = t;
+	strncpy(t.name, "SAN", 4);
+	san[0] = t;
+	populateparents(in, me, len);
+	populateparents(in, san, len);
+	int jump = intersect(me, san, len/3);
+	printf("Totalt len is: %d", jump);
 }
 
 int main() {
